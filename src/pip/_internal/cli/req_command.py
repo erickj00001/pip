@@ -444,6 +444,7 @@ class RequirementCommand(IndexGroupCommand):
             allow_all_prereleases=options.pre,
             prefer_binary=options.prefer_binary,
             ignore_requires_python=ignore_requires_python,
+            skip_remote_binary=options.skip_remote_binary,
         )
 
         return PackageFinder.create(

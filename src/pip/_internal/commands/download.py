@@ -51,6 +51,7 @@ class DownloadCommand(RequirementCommand):
         self.cmd_opts.add_option(cmdoptions.use_pep517())
         self.cmd_opts.add_option(cmdoptions.no_use_pep517())
         self.cmd_opts.add_option(cmdoptions.ignore_requires_python())
+        self.cmd_opts.add_option(cmdoptions.skip_remote_binary())
 
         self.cmd_opts.add_option(
             '-d', '--dest', '--destination-dir', '--destination-directory',

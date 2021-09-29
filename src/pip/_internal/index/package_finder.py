@@ -112,6 +112,7 @@ class LinkEvaluator:
         target_python: TargetPython,
         allow_yanked: bool,
         ignore_requires_python: Optional[bool] = None,
+        skip_remote_binary: Optional[bool] = None,
     ) -> None:
         """
         :param project_name: The user supplied package name.
@@ -129,13 +130,19 @@ class LinkEvaluator:
         :param ignore_requires_python: Whether to ignore incompatible
             PEP 503 "data-requires-python" values in HTML links. Defaults
             to False.
+        :param skip_remote_binary: Skip binary packages if remote, but
+            allow them if local (assuming 'binary' is in the allowed
+            formats)
         """
         if ignore_requires_python is None:
             ignore_requires_python = False
+        if skip_remote_binary is None:
+            skip_remote_binary = False
 
         self._allow_yanked = allow_yanked
         self._canonical_name = canonical_name
         self._ignore_requires_python = ignore_requires_python
+        self._skip_remote_binary = skip_remote_binary
         self._formats = formats
         self._target_python = target_python
 
@@ -167,6 +174,9 @@ class LinkEvaluator:
             if "binary" not in self._formats and ext == WHEEL_EXTENSION:
                 reason = 'No binaries permitted for {}'.format(
                     self.project_name)
+                return (False, reason)
+            if self._skip_remote_binary and ext == WHEEL_EXTENSION and not link.is_file:
+                reason = 'No remote binaries permitted'
                 return (False, reason)
             if "macosx10" in link.path and ext == '.zip':
                 return (False, 'macosx10 one')
@@ -578,6 +588,7 @@ class PackageFinder:
         format_control: Optional[FormatControl] = None,
         candidate_prefs: Optional[CandidatePreferences] = None,
         ignore_requires_python: Optional[bool] = None,
+        skip_remote_binary: Optional[bool] = None,
     ) -> None:
         """
         This constructor is primarily meant to be used by the create() class
@@ -597,6 +608,7 @@ class PackageFinder:
         self._allow_yanked = allow_yanked
         self._candidate_prefs = candidate_prefs
         self._ignore_requires_python = ignore_requires_python
+        self._skip_remote_binary = skip_remote_binary
         self._link_collector = link_collector
         self._target_python = target_python
 
@@ -639,6 +651,7 @@ class PackageFinder:
             allow_yanked=selection_prefs.allow_yanked,
             format_control=selection_prefs.format_control,
             ignore_requires_python=selection_prefs.ignore_requires_python,
+            skip_remote_binary=selection_prefs.skip_remote_binary,
         )
 
     @property
@@ -691,6 +704,7 @@ class PackageFinder:
             target_python=self._target_python,
             allow_yanked=self._allow_yanked,
             ignore_requires_python=self._ignore_requires_python,
+            skip_remote_binary=self._skip_remote_binary,
         )
 
     def _sort_links(self, links: Iterable[Link]) -> List[Link]:

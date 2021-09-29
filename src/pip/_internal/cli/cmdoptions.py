@@ -739,6 +739,14 @@ ignore_requires_python: Callable[..., Option] = partial(
     help="Ignore the Requires-Python information.",
 )
 
+skip_remote_binary: Callable[..., Option] = partial(
+    Option,
+    "--skip-remote-binary",
+    dest="skip_remote_binary",
+    action="store_true",
+    help="Skip any remote binary packages during search.",
+)
+
 no_build_isolation: Callable[..., Option] = partial(
     Option,
     "--no-build-isolation",
