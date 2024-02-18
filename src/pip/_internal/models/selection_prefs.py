@@ -15,6 +15,7 @@ class SelectionPreferences:
         "format_control",
         "prefer_binary",
         "ignore_requires_python",
+		"skip_remote_binary",
     ]
 
     # Don't include an allow_yanked default value to make sure each call
@@ -28,6 +29,7 @@ class SelectionPreferences:
         format_control: Optional[FormatControl] = None,
         prefer_binary: bool = False,
         ignore_requires_python: Optional[bool] = None,
+        skip_remote_binary: Optional[bool] = None,
     ) -> None:
         """Create a SelectionPreferences object.
 
@@ -40,12 +42,18 @@ class SelectionPreferences:
             dist over a new source dist.
         :param ignore_requires_python: Whether to ignore incompatible
             "Requires-Python" values in links. Defaults to False.
+        :param skip_remote_binary: Skip binary packages if remote, but
+            allow them if local (assuming 'binary' is in the allowed
+            formats)
         """
         if ignore_requires_python is None:
             ignore_requires_python = False
+        if skip_remote_binary is None:
+            skip_remote_binary = False
 
         self.allow_yanked = allow_yanked
         self.allow_all_prereleases = allow_all_prereleases
         self.format_control = format_control
         self.prefer_binary = prefer_binary
         self.ignore_requires_python = ignore_requires_python
+        self.skip_remote_binary = skip_remote_binary
